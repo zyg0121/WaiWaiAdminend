@@ -4,6 +4,11 @@
     router>
     <el-menu-item index="/welcome">概览</el-menu-item>
     <el-menu-item index="/goods">商品管理</el-menu-item>
+	<el-menu-item index="/user">用户管理</el-menu-item>
+	<el-menu-item index="/order">订单管理</el-menu-item>
+	<el-menu-item index="/want">“我想要”管理</el-menu-item>
+	<el-menu-item index="/category">商品种类管理</el-menu-item>
+	<el-menu-item index="/feedback">反馈管理</el-menu-item>
   </el-menu>
 </template>
 
