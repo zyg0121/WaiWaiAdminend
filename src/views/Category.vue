@@ -82,12 +82,12 @@ export default {
         }
     },
     created() {
-        this.easyLoad();
+        this.Load();
         let userStr = sessionStorage.getItem("user") || '{}';
         this.user = JSON.parse(userStr);
     },
     methods: {
-        load() {
+        pastload() {
             request.get("/api/category/all", {
                 params: {
                     pageNum: this.currentPage4,
@@ -101,7 +101,7 @@ export default {
                 this.total = res.data.total;
             })
         },
-		easyLoad(){
+		Load(){
 			request.get("/api/category/all")
 			.then(res => {
 				console.log(res);

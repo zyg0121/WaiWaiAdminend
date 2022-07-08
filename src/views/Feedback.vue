@@ -92,11 +92,13 @@ export default {
             search: '',
             currentPage4: 1,
             pageSize: 10,
-            total: 0,
+            total: 1,
             dialogVisible: false,
             tableData: [],
-            user: {}
-        }
+            user: {},
+			ex:[{feedbackid:1,orderid:1,feedbackdesc:"不错",feedbackstatus:0,feedbackdate:"2022-07-06 10:54:40"},
+				{feedbackid:2,orderid:2,feedbackdesc:"还行还行",feedbackstatus:1,feedbackdate:"2022-07-06 10:54:40"}],
+		}
     },
     created() {
         this.load();
@@ -115,7 +117,7 @@ export default {
                 console.log(this.search)
                 console.log(res);
                 this.tableData = res.data.records;
-                this.total = res.data.total;
+				this.tableData = this.ex;
             })
         },
         add() {

@@ -11,11 +11,11 @@
             </el-button>
         </div>
         <el-table :data="tableData" border stripe style="width: 100%">
-            <el-table-column prop="wantid" label=" 我想要 编号" sortable>
+            <el-table-column prop="wantId" label=" 我想要 编号" sortable>
             </el-table-column>
-            <el-table-column prop="userid" label="用户编号">
+            <el-table-column prop="userId" label="用户编号">
             </el-table-column>
-            <el-table-column prop="goodsid" label="商品编号">
+            <el-table-column prop="goodsId" label="商品编号">
             </el-table-column>
 
             <el-table-column fixed="right" label="操作">
@@ -44,10 +44,10 @@
             <el-dialog title="提示" v-model="dialogVisible" width="30%">
                 <el-form :model="form" label-width="120px">
                     <el-form-item label="用户编号">
-                        <el-input v-model="form.userid"></el-input>
+                        <el-input v-model="form.userId"></el-input>
                     </el-form-item>
                     <el-form-item label="商品编号">
-                        <el-input v-model="form.goodsid"></el-input>
+                        <el-input v-model="form.goodsId"></el-input>
                     </el-form-item>
                 </el-form>
                 <template #footer>
@@ -81,7 +81,10 @@ export default {
             total: 0,
             dialogVisible: false,
             tableData: [],
-            user: {}
+            user: {},
+			ex:[{wantId: 1, userId: 1, goodsId: 1},
+				{wantId: 2, userId: 2, goodsId: 1},
+				{wantId: 4, userId: 3, goodsId: 2}],
         }
     },
     created() {
@@ -100,6 +103,7 @@ export default {
                 console.log(res);
                 this.tableData = res.data.records;
                 this.total = res.data.total;
+				this.tableData = this.ex;
             })
         },
         add() {
