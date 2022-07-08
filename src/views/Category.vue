@@ -82,7 +82,7 @@ export default {
         }
     },
     created() {
-        this.load();
+        this.easyLoad();
         let userStr = sessionStorage.getItem("user") || '{}';
         this.user = JSON.parse(userStr);
     },
@@ -101,12 +101,11 @@ export default {
                 this.total = res.data.total;
             })
         },
-		esayLoad(){
+		easyLoad(){
 			request.get("/api/category/all")
 			.then(res => {
 				console.log(res);
-				this.tableData = res.data.records;
-				this.total = res.data.toatl;
+				this.tableData = res.data;
 			})
 		},
         add() {
