@@ -110,14 +110,8 @@ export default {
     },
     methods: {
         load() {
-            request.get("/api/order/selectAllByPage", {
-                params: {
-                    pageNum: this.currentPage4,
-                    pageSize: this.pageSize,
-                    search: this.search,
-                }
-            }).then(res => {
-                console.log(this.search)
+            request.get("/api/order/select/AllByPage?pageNum=1&pageSize=5")
+			.then(res => {
                 console.log(res);
                 this.tableData = res.data.records;
                 this.total = res.data.total;
