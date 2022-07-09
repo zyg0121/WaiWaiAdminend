@@ -21,17 +21,15 @@
             </el-table-column>
             <el-table-column prop="goodsdesc" label="商品描述">
             </el-table-column>
-            <el-table-column prop="goodsimg" label="商品图片">
-            </el-table-column>
-            <!--<el-table-column label="商品图片">
+            <el-table-column label="商品图片">
                 <template #default="scope">
                     <div class="demo-image__preview">
-                        <el-image style="width: 100px; height: 100px" :src="scope.row.cover"
-                            :preview-src-list="[scope.row.cover]">
+                        <el-image style="width: 100px; height: 100px" :src=" imgurl + scope.row.goodsimg"
+                            :preview-src-list="[imgurl + scope.row.goodsimg]">
                         </el-image>
                     </div>
                 </template>
-            </el-table-column>-->
+            </el-table-column>
              <el-table-column prop="goodslevel" label="商品程度">
             </el-table-column>
              <el-table-column prop="categoryid" label="分类id">
@@ -88,15 +86,15 @@
                     <el-form-item label="商品状态">
                         <el-input v-model="form.goodsstatus"></el-input>
                     </el-form-item>
-                    <!--<el-form-item label="商品图片">
-                        <el-upload ref="upload" action="/api/files/upload"
+                    <el-form-item label="商品图片">
+                        <el-upload ref="upload" action="/api/img/upload" :data={id:form.goodsid}
                             :on-success="filesUploadSuccess">
                             <el-button type="primary">点击上传</el-button>
                         </el-upload>
-                    </el-form-item>-->
-                    <el-form-item label="商品图片">
-                        <el-input v-model="form.goodsimg"></el-input>
                     </el-form-item>
+                    <!--<el-form-item label="商品图片">
+                        <el-input v-model="form.goodsimg"></el-input>
+                    </el-form-item>-->
                 </el-form>
                 <template #footer>
                     <span class="dialog-footer">
@@ -122,6 +120,7 @@ export default {
     },
     data() {
         return {
+            imgurl: 'http://localhost:9002/upload/',
             form: {},
             search: '',
             currentPage4: 1,
@@ -164,7 +163,19 @@ export default {
         save() {
             //console.log(this.form)
             if (this.form.goodsid) {//更新
-                request.post("/api/good/update", this.form).then(res => {
+                console.log(this.form.goodsid)
+                console.log(this.form)
+                var ret = {}
+                ret.categoryid = this.form.categoryid
+                ret.goodsdate = this.form.goodsdate
+                ret.goodsid = this.form.goodsid
+                ret.goodsimg = this.form.goodsimg
+                ret.goodslevel = this.form.goodslevel
+                ret.goodsname = this.form.goodsname
+                ret.goodsprice = this.form.goodsprice
+                ret.goodsstatus = this.form.goodsstatus
+                console.log(ret)
+                request.post("/api/good/update", ret).then(res => {
                     console.log(res);
                     if (res.state == '0') {
                         this.$message({
@@ -223,9 +234,9 @@ export default {
         // },
         handleDelete(id) {
             console.log(id);
-            request.get("/api/good/delete?id=" + id).then(res => {
+            request.get("/api/good/delete?goodsid=" + id).then(res => {
                 console.log(res)
-                if (res.state === '0') {
+                if (res.state == '0') {
                     this.$message({
                         type: "success",
                         message: "删除成功"
@@ -242,7 +253,7 @@ export default {
 
         filesUploadSuccess(res) {
             console.log(res);
-            this.form.cover = res.data;
+            this.form.goodsimg = res.data.imgurl;
             this.load();
         }
 
