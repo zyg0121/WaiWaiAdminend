@@ -11,43 +11,22 @@
             </el-button>
         </div>
         <el-table :data="tableData" border stripe style="width: 100%">
-            <el-table-column prop="goodsid" label="ID" sortable>
+            <el-table-column prop="categoryid" label="商品种类编号" sortable>
             </el-table-column>
-            <el-table-column prop="goodsname" label="商品名称">
-            </el-table-column>
-            <el-table-column prop="userid" label="卖家id">
-            </el-table-column>
-            <el-table-column prop="goodsprice" label="商品价格">
-            </el-table-column>
-            <el-table-column prop="goodsdesc" label="商品描述">
-            </el-table-column>
-            <el-table-column label="商品图片">
-                <template #default="scope">
-                    <div class="demo-image__preview">
-                        <el-image style="width: 100px; height: 100px" :src=" imgurl + scope.row.goodsimg"
-                            :preview-src-list="[imgurl + scope.row.goodsimg]">
-                        </el-image>
-                    </div>
-                </template>
-            </el-table-column>
-             <el-table-column prop="goodslevel" label="商品程度">
-            </el-table-column>
-             <el-table-column prop="categoryid" label="分类id">
-            </el-table-column>
-             <el-table-column prop="goodsdate" label="发布时间">
-            </el-table-column>
-            <el-table-column prop="goodsstatus" label="商品状态">
+            <el-table-column prop="categoryname" label="商品种类名称">
             </el-table-column>
 
             <el-table-column fixed="right" label="操作">
                 <template #default="scope">
                     <div style="display: flex; align-content: space-between">
                         <el-button @click="handleEdit(scope.row)" type="primary">编辑</el-button>
+						<!--
                         <el-popconfirm title="确定删除吗？" @confirm="handleDelete(scope.row.goodsid)">
                             <template #reference>
                                 <el-button type="danger">删除</el-button>
                             </template>
                         </el-popconfirm>
+						-->
                     </div>
                 </template>
             </el-table-column>
@@ -64,37 +43,9 @@
             <!--弹窗-->
             <el-dialog title="提示" v-model="dialogVisible" width="30%">
                 <el-form :model="form" label-width="120px">
-                    <el-form-item label="商品名称">
-                        <el-input v-model="form.goodsname"></el-input>
+                    <el-form-item label="商品种类名称">
+                        <el-input v-model="form.categoryname"></el-input>
                     </el-form-item>
-                    <el-form-item label="商品价格">
-                        <el-input v-model="form.goodsprice"></el-input>
-                    </el-form-item>
-                    <el-form-item label="商品描述">
-                        <el-input v-model="form.goodsdesc"></el-input>
-                    </el-form-item>
-                    <el-form-item label="商品程度">
-                        <el-input v-model="form.goodslevel"></el-input>
-                    </el-form-item>
-                    <el-form-item label="分类id">
-                        <el-input v-model="form.categoryid"></el-input>
-                    </el-form-item>
-                    <el-form-item label="发布时间">
-                        <el-date-picker style="width: 100%;" value-format="YYYY-MM-DD HH:mm:ss" v-model="form.goodsdate"
-                            type="datetime" clearable></el-date-picker>
-                    </el-form-item>
-                    <el-form-item label="商品状态">
-                        <el-input v-model="form.goodsstatus"></el-input>
-                    </el-form-item>
-                    <el-form-item label="商品图片">
-                        <el-upload ref="upload" action="/api/img/upload" :data={id:form.goodsid}
-                            :on-success="filesUploadSuccess">
-                            <el-button type="primary">点击上传</el-button>
-                        </el-upload>
-                    </el-form-item>
-                    <!--<el-form-item label="商品图片">
-                        <el-input v-model="form.goodsimg"></el-input>
-                    </el-form-item>-->
                 </el-form>
                 <template #footer>
                     <span class="dialog-footer">
@@ -120,7 +71,6 @@ export default {
     },
     data() {
         return {
-            imgurl: 'http://localhost:9002/upload/',
             form: {},
             search: '',
             currentPage4: 1,
@@ -132,13 +82,13 @@ export default {
         }
     },
     created() {
-        this.load();
+        this.Load();
         let userStr = sessionStorage.getItem("user") || '{}';
         this.user = JSON.parse(userStr);
     },
     methods: {
-        load() {
-            request.get("/api/good/selectAllByPage", {
+        pastload() {
+            request.get("/api/category/all", {
                 params: {
                     pageNum: this.currentPage4,
                     pageSize: this.pageSize,
@@ -151,6 +101,13 @@ export default {
                 this.total = res.data.total;
             })
         },
+		Load(){
+			request.get("/api/category/all")
+			.then(res => {
+				console.log(res);
+				this.tableData = res.data;
+			})
+		},
         add() {
             this.dialogVisible = true;
             this.form = {};
@@ -163,19 +120,7 @@ export default {
         save() {
             //console.log(this.form)
             if (this.form.goodsid) {//更新
-                console.log(this.form.goodsid)
-                console.log(this.form)
-                var ret = {}
-                ret.categoryid = this.form.categoryid
-                ret.goodsdate = this.form.goodsdate
-                ret.goodsid = this.form.goodsid
-                ret.goodsimg = this.form.goodsimg
-                ret.goodslevel = this.form.goodslevel
-                ret.goodsname = this.form.goodsname
-                ret.goodsprice = this.form.goodsprice
-                ret.goodsstatus = this.form.goodsstatus
-                console.log(ret)
-                request.post("/api/good/update", ret).then(res => {
+                request.post("/api/category/update", this.form).then(res => {
                     console.log(res);
                     if (res.state == '0') {
                         this.$message({
@@ -192,7 +137,7 @@ export default {
                     this.dialogVisible = false;//关闭弹窗
                 });
             } else {//新增 暂时抛弃
-                request.post("/api/good/insert", this.form).then(res => {
+                request.post("/api/category/insert", this.form).then(res => {
                     console.log(res);
                     if (res.state == '0') {
                         this.$message({
@@ -234,9 +179,9 @@ export default {
         // },
         handleDelete(id) {
             console.log(id);
-            request.get("/api/good/delete?goodsid=" + id).then(res => {
+            request.get("/api/category/delete?id=" + id).then(res => {
                 console.log(res)
-                if (res.state == '0') {
+                if (res.state === '0') {
                     this.$message({
                         type: "success",
                         message: "删除成功"
@@ -253,7 +198,7 @@ export default {
 
         filesUploadSuccess(res) {
             console.log(res);
-            this.form.goodsimg = res.data.imgurl;
+            this.form.cover = res.data;
             this.load();
         }
 

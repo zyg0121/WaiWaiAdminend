@@ -11,32 +11,15 @@
             </el-button>
         </div>
         <el-table :data="tableData" border stripe style="width: 100%">
-            <el-table-column prop="goodsid" label="ID" sortable>
+            <el-table-column prop="feedbackid" label="反馈编号" sortable>
             </el-table-column>
-            <el-table-column prop="goodsname" label="商品名称">
+            <el-table-column prop="orderid" label="订单编号">
             </el-table-column>
-            <el-table-column prop="userid" label="卖家id">
+            <el-table-column prop="feedbackdesc" label="反馈内容">
             </el-table-column>
-            <el-table-column prop="goodsprice" label="商品价格">
+            <el-table-column prop="feedbackstatus" label="反馈状态">
             </el-table-column>
-            <el-table-column prop="goodsdesc" label="商品描述">
-            </el-table-column>
-            <el-table-column label="商品图片">
-                <template #default="scope">
-                    <div class="demo-image__preview">
-                        <el-image style="width: 100px; height: 100px" :src=" imgurl + scope.row.goodsimg"
-                            :preview-src-list="[imgurl + scope.row.goodsimg]">
-                        </el-image>
-                    </div>
-                </template>
-            </el-table-column>
-             <el-table-column prop="goodslevel" label="商品程度">
-            </el-table-column>
-             <el-table-column prop="categoryid" label="分类id">
-            </el-table-column>
-             <el-table-column prop="goodsdate" label="发布时间">
-            </el-table-column>
-            <el-table-column prop="goodsstatus" label="商品状态">
+             <el-table-column prop="feedbackdate" label="反馈时间">
             </el-table-column>
 
             <el-table-column fixed="right" label="操作">
@@ -64,37 +47,22 @@
             <!--弹窗-->
             <el-dialog title="提示" v-model="dialogVisible" width="30%">
                 <el-form :model="form" label-width="120px">
-                    <el-form-item label="商品名称">
-                        <el-input v-model="form.goodsname"></el-input>
+                    <el-form-item label="反馈编号">
+                        <el-input v-model="form.feedbackid"></el-input>
                     </el-form-item>
-                    <el-form-item label="商品价格">
-                        <el-input v-model="form.goodsprice"></el-input>
+                    <el-form-item label="订单编号">
+                        <el-input v-model="form.orderid"></el-input>
                     </el-form-item>
-                    <el-form-item label="商品描述">
-                        <el-input v-model="form.goodsdesc"></el-input>
+                    <el-form-item label="反馈内容">
+                        <el-input v-model="form.feedbackdesc"></el-input>
                     </el-form-item>
-                    <el-form-item label="商品程度">
-                        <el-input v-model="form.goodslevel"></el-input>
+                    <el-form-item label="反馈状态">
+                        <el-input v-model="form.feedbackstatus"></el-input>
                     </el-form-item>
-                    <el-form-item label="分类id">
-                        <el-input v-model="form.categoryid"></el-input>
-                    </el-form-item>
-                    <el-form-item label="发布时间">
-                        <el-date-picker style="width: 100%;" value-format="YYYY-MM-DD HH:mm:ss" v-model="form.goodsdate"
+                    <el-form-item label="反馈时间">
+                        <el-date-picker style="width: 100%;" value-format="YYYY-MM-DD HH:mm:ss" v-model="form.feedbackdate"
                             type="datetime" clearable></el-date-picker>
                     </el-form-item>
-                    <el-form-item label="商品状态">
-                        <el-input v-model="form.goodsstatus"></el-input>
-                    </el-form-item>
-                    <el-form-item label="商品图片">
-                        <el-upload ref="upload" action="/api/img/upload" :data={id:form.goodsid}
-                            :on-success="filesUploadSuccess">
-                            <el-button type="primary">点击上传</el-button>
-                        </el-upload>
-                    </el-form-item>
-                    <!--<el-form-item label="商品图片">
-                        <el-input v-model="form.goodsimg"></el-input>
-                    </el-form-item>-->
                 </el-form>
                 <template #footer>
                     <span class="dialog-footer">
@@ -120,16 +88,17 @@ export default {
     },
     data() {
         return {
-            imgurl: 'http://localhost:9002/upload/',
             form: {},
             search: '',
             currentPage4: 1,
             pageSize: 10,
-            total: 0,
+            total: 1,
             dialogVisible: false,
             tableData: [],
-            user: {}
-        }
+            user: {},
+			ex:[{feedbackid:1,orderid:1,feedbackdesc:"不错",feedbackstatus:0,feedbackdate:"2022-07-06 10:54:40"},
+				{feedbackid:2,orderid:2,feedbackdesc:"还行还行",feedbackstatus:1,feedbackdate:"2022-07-06 10:54:40"}],
+		}
     },
     created() {
         this.load();
@@ -138,7 +107,7 @@ export default {
     },
     methods: {
         load() {
-            request.get("/api/good/selectAllByPage", {
+            request.get("/api/feedback/selectAllByPage", {
                 params: {
                     pageNum: this.currentPage4,
                     pageSize: this.pageSize,
@@ -148,7 +117,7 @@ export default {
                 console.log(this.search)
                 console.log(res);
                 this.tableData = res.data.records;
-                this.total = res.data.total;
+				this.tableData = this.ex;
             })
         },
         add() {
@@ -163,19 +132,7 @@ export default {
         save() {
             //console.log(this.form)
             if (this.form.goodsid) {//更新
-                console.log(this.form.goodsid)
-                console.log(this.form)
-                var ret = {}
-                ret.categoryid = this.form.categoryid
-                ret.goodsdate = this.form.goodsdate
-                ret.goodsid = this.form.goodsid
-                ret.goodsimg = this.form.goodsimg
-                ret.goodslevel = this.form.goodslevel
-                ret.goodsname = this.form.goodsname
-                ret.goodsprice = this.form.goodsprice
-                ret.goodsstatus = this.form.goodsstatus
-                console.log(ret)
-                request.post("/api/good/update", ret).then(res => {
+                request.post("/api/feedback/update", this.form).then(res => {
                     console.log(res);
                     if (res.state == '0') {
                         this.$message({
@@ -192,7 +149,7 @@ export default {
                     this.dialogVisible = false;//关闭弹窗
                 });
             } else {//新增 暂时抛弃
-                request.post("/api/good/insert", this.form).then(res => {
+                request.post("/api/feedback/insert", this.form).then(res => {
                     console.log(res);
                     if (res.state == '0') {
                         this.$message({
@@ -234,9 +191,9 @@ export default {
         // },
         handleDelete(id) {
             console.log(id);
-            request.get("/api/good/delete?goodsid=" + id).then(res => {
+            request.get("/api/feedback/delete?id=" + id).then(res => {
                 console.log(res)
-                if (res.state == '0') {
+                if (res.state === '0') {
                     this.$message({
                         type: "success",
                         message: "删除成功"
@@ -253,7 +210,7 @@ export default {
 
         filesUploadSuccess(res) {
             console.log(res);
-            this.form.goodsimg = res.data.imgurl;
+            this.form.cover = res.data;
             this.load();
         }
 
